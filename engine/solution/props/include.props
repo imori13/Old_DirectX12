@@ -16,6 +16,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ForcedIncludeFiles>pch.hpp</ForcedIncludeFiles>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
