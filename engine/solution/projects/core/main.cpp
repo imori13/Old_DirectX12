@@ -1,5 +1,4 @@
-
-int main()
+﻿int32_t main()
 {
 	std::cout << "hello world!!" << std::endl;
 
