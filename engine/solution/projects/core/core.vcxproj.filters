@@ -9,6 +9,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="source\core">
+      <UniqueIdentifier>{695558b9-23e9-4772-a476-76e27dc8b1ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -17,9 +20,18 @@
     <ClCompile Include="pch.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="core.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.hpp">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="core.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include.hpp">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
