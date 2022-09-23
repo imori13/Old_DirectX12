@@ -12,6 +12,12 @@
     <Filter Include="source\core">
       <UniqueIdentifier>{695558b9-23e9-4772-a476-76e27dc8b1ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\math">
+      <UniqueIdentifier>{fa484b7f-d4c5-4d09-8ed0-df0d1746ea6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\render">
+      <UniqueIdentifier>{e8d8b75e-227b-4169-9a4b-dd27b3285822}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,6 +27,24 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="core.cpp">
+      <Filter>source\core</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d12_factory.cpp">
+      <Filter>source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="descriptor_heap.cpp">
+      <Filter>source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="gpu_buffer.cpp">
+      <Filter>source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic_d3d12.cpp">
+      <Filter>source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="swapchain.cpp">
+      <Filter>source\render</Filter>
+    </ClCompile>
+    <ClCompile Include="winapp.cpp">
       <Filter>source\core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -34,5 +58,49 @@
     <ClInclude Include="include.hpp">
       <Filter>source</Filter>
     </ClInclude>
+    <ClInclude Include="math.hpp">
+      <Filter>source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix4x4.hpp">
+      <Filter>source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.hpp">
+      <Filter>source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3.hpp">
+      <Filter>source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector4.hpp">
+      <Filter>source\math</Filter>
+    </ClInclude>
+    <ClInclude Include="descriptor_heap.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d12_factory.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="gpu_buffer.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="graphic_d3d12.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="swapchain.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
+    <ClInclude Include="winapp.hpp">
+      <Filter>source\core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="simple_ps.hlsl">
+      <Filter>resource</Filter>
+    </FxCompile>
+    <FxCompile Include="simple_vs.hlsl">
+      <Filter>resource</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
