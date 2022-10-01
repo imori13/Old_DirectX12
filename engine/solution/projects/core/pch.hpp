@@ -45,3 +45,5 @@
 
 /*  警告を有効化  */
 #pragma warning(pop)
+
+#pragma warning(disable: 26812)	// C26812: enum -> enum class
