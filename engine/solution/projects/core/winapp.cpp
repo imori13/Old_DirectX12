@@ -86,8 +86,3 @@ void winapp::update() noexcept
 		DispatchMessage(&m_msg);
 	}
 }
-
-bool winapp::isloop() const noexcept
-{
-	return WM_QUIT != m_msg.message;
-}

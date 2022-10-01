@@ -22,7 +22,7 @@ public:
 	void update() noexcept;
 
 public:
-	bool isloop() const noexcept;
+	inline bool isloop() const noexcept { return WM_QUIT != m_msg.message; }
 	inline uint32_t get_width() const noexcept { return m_width; }
 	inline uint32_t get_height() const noexcept { return m_height; }
 	inline HINSTANCE get_hinstance() const noexcept { return m_hinst; }
