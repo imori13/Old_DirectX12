@@ -32,11 +32,18 @@ public:
 	graphic_d3d12& operator=(const graphic_d3d12&) = delete;
 
 public:
-	void render();
+	void create_devices();
+	void create_pipelines();
+	void create_render_objects();
 	void update();
+	void render_begin();
+	void render();
+	void render_end();
 	void wait_gpu();
 
 private:
+	const winapp& m_winapp;
+
 	Microsoft::WRL::ComPtr<ID3D12Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_command_queue;
 	Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapchain;

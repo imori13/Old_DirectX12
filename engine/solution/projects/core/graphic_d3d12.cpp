@@ -23,6 +23,23 @@ namespace
 }
 
 graphic_d3d12::graphic_d3d12(const winapp& winapp)
+	: m_winapp(winapp)
+{
+	
+}
+
+graphic_d3d12::~graphic_d3d12() noexcept(false)
+{
+	wait_gpu();
+
+	if(m_fence_event != nullptr)
+	{
+		CloseHandle(m_fence_event);
+		m_fence_event = nullptr;
+	}
+}
+
+void graphic_d3d12::create_devices()
 {
 	using namespace d3d12_factory;
 
@@ -39,7 +56,7 @@ graphic_d3d12::graphic_d3d12(const winapp& winapp)
 	// create swapchain
 	{
 		// create swapchain
-		m_swapchain = create_swapchain(m_command_queue.Get(), winapp.get_width(), winapp.get_height(), FRAME_COUNT, winapp.get_hwnd());
+		m_swapchain = create_swapchain(m_command_queue.Get(), m_winapp.get_width(), m_winapp.get_height(), FRAME_COUNT, m_winapp.get_hwnd());
 
 		// get current back buffer index
 		m_frame_index = m_swapchain->GetCurrentBackBufferIndex();
@@ -94,50 +111,11 @@ graphic_d3d12::graphic_d3d12(const winapp& winapp)
 	}
 
 	m_command_list->Close();
+}
 
-	// ----------------------------------------------------------------------------------------------------
-
-	std::vector<vertex> vertices =
-	{
-		vertex{ vector3(-1.0f,-1.0f, 0.0f), vector4(0.0f, 0.0f, 1.0f, 1.0f)},
-		vertex{ vector3( 1.0f,-1.0f, 0.0f), vector4(0.0f, 1.0f, 0.0f, 1.0f)},
-		vertex{ vector3( 0.0f, 1.0f, 0.0f), vector4(1.0f, 0.0f, 0.0f, 1.0f)},
-	};
-
-	m_vertex_buffer = gpu_buffer<vertex>(m_device.Get(), vertices.size() * sizeof(vertex));
-
-	m_vertex_buffer.map(vertices);
-
-	_transform _trans{};
-
-	// create constant buffer
-	for(auto i = 0; i < m_constant_buffers.size(); ++i)
-	{
-		m_constant_buffers.at(i) = gpu_buffer<_transform>(m_device.Get(), sizeof(_transform));
-		m_constant_buffers.at(i).map(gsl::make_span<_transform>(&_trans, 1));
-	}
-
-	// bind heap
-	m_heap_cbv = std::make_unique<descriptor_heap>(m_device.Get(), FRAME_COUNT, heap_type::cbv_srv_uav, heap_flag::shader_visible);
-
-	for(auto i = 0; i < m_constant_buffers.size(); ++i)
-	{
-		m_heap_cbv->create_cbv(m_constant_buffers.at(i).get_resource());
-	}
-
-	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f);
-	const auto& target_pos = DirectX::XMVectorZero();
-	const auto& up_ward = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	const auto& fov_y = DirectX::XMConvertToRadians(37.5f);
-	const auto& aspect = static_cast<float>(winapp.get_width()) / static_cast<float>(winapp.get_height());
-
-	for(auto& buffer : m_constant_buffers)
-	{
-		buffer.get()->world = DirectX::XMMatrixIdentity();
-		buffer.get()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
-		buffer.get()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
-	}
+void graphic_d3d12::create_pipelines()
+{
+	HRESULT hr{};
 
 	D3D12_ROOT_PARAMETER param{};
 	param.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -260,29 +238,75 @@ graphic_d3d12::graphic_d3d12(const winapp& winapp)
 	// Setting Viewport
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = static_cast<float>(winapp.get_width());
-	viewport.Height = static_cast<float>(winapp.get_height());
+	viewport.Width = static_cast<float>(m_winapp.get_width());
+	viewport.Height = static_cast<float>(m_winapp.get_height());
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1;
 
 	scissor.left = 0;
-	scissor.right = winapp.get_width();
+	scissor.right = m_winapp.get_width();
 	scissor.top = 0;
-	scissor.bottom = winapp.get_height();
+	scissor.bottom = m_winapp.get_height();
 }
 
-graphic_d3d12::~graphic_d3d12() noexcept(false)
+void graphic_d3d12::create_render_objects()
 {
-	wait_gpu();
+	HRESULT hr{};
 
-	if(m_fence_event != nullptr)
+	std::vector<vertex> vertices =
 	{
-		CloseHandle(m_fence_event);
-		m_fence_event = nullptr;
+		vertex{ vector3(-1.0f,-1.0f, 0.0f), vector4(0.0f, 0.0f, 1.0f, 1.0f)},
+		vertex{ vector3(1.0f,-1.0f, 0.0f), vector4(0.0f, 1.0f, 0.0f, 1.0f)},
+		vertex{ vector3(0.0f, 1.0f, 0.0f), vector4(1.0f, 0.0f, 0.0f, 1.0f)},
+	};
+
+	m_vertex_buffer = gpu_buffer<vertex>(m_device.Get(), vertices.size() * sizeof(vertex));
+
+	m_vertex_buffer.map(vertices);
+
+	_transform _trans{};
+
+	// create constant buffer
+	for(auto i = 0; i < m_constant_buffers.size(); ++i)
+	{
+		m_constant_buffers.at(i) = gpu_buffer<_transform>(m_device.Get(), sizeof(_transform));
+		m_constant_buffers.at(i).map(gsl::make_span<_transform>(&_trans, 1));
+	}
+
+	// bind heap
+	m_heap_cbv = std::make_unique<descriptor_heap>(m_device.Get(), FRAME_COUNT, heap_type::cbv_srv_uav, heap_flag::shader_visible);
+
+	for(auto i = 0; i < m_constant_buffers.size(); ++i)
+	{
+		m_heap_cbv->create_cbv(m_constant_buffers.at(i).get_resource());
+	}
+
+	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f);
+	const auto& target_pos = DirectX::XMVectorZero();
+	const auto& up_ward = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	const auto& fov_y = DirectX::XMConvertToRadians(37.5f);
+	const auto& aspect = static_cast<float>(m_winapp.get_width()) / static_cast<float>(m_winapp.get_height());
+
+	for(auto& buffer : m_constant_buffers)
+	{
+		buffer.get()->world = DirectX::XMMatrixIdentity();
+		buffer.get()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
+		buffer.get()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
 	}
 }
 
-void graphic_d3d12::render()
+void graphic_d3d12::update()
+{
+	static float s_angle = 0.f;
+
+	s_angle += 0.01f;
+
+	auto& buffer = m_constant_buffers.at(m_frame_index);
+	buffer.get()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
+}
+
+void graphic_d3d12::render_begin()
 {
 	// start commandt
 	m_command_allocator.at(m_frame_index)->Reset();
@@ -305,7 +329,10 @@ void graphic_d3d12::render()
 	constexpr const std::array<float, 4> clear_color = { 0.125f,0.1f,0.1f,1.0f };
 
 	m_command_list->ClearRenderTargetView(m_heap_rtv->at(m_frame_index).cpu_handle, clear_color.data(), 0, nullptr);
+}
 
+void graphic_d3d12::render()
+{
 	// •`‰æˆ—5
 	{
 		const auto& vbv = m_vertex_buffer.get_vertex_buffer_view();
@@ -320,8 +347,12 @@ void graphic_d3d12::render()
 		m_command_list->RSSetScissorRects(1, &scissor);
 		m_command_list->DrawInstanced(3, 1, 0, 0);
 	}
+}
 
+void graphic_d3d12::render_end()
+{
 	// resource barrier
+	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	barrier.Transition.pResource = m_color_buffer.at(m_frame_index).Get();
@@ -355,16 +386,6 @@ void graphic_d3d12::render()
 	}
 
 	m_fence_counter.at(m_frame_index) = currentValue + 1;
-}
-
-void graphic_d3d12::update()
-{
-	static float s_angle = 0.f;
-
-	s_angle += 0.01f;
-
-	auto& buffer = m_constant_buffers.at(m_frame_index);
-	buffer.get()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
 }
 
 void graphic_d3d12::wait_gpu()
