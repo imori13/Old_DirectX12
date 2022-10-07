@@ -18,6 +18,12 @@
       <ForcedIncludeFiles>pch.hpp;include.hpp</ForcedIncludeFiles>
       <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <PostBuildEvent>
+      <Command>(robocopy $(ProjectDir) $(OutDir) *.cso /E /xo /COPY:DT) ^&amp; IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
