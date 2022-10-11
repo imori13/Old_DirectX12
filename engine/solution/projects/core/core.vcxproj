@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
+    <ClInclude Include="d3d12_define.hpp" />
     <ClInclude Include="d3d12_factory.hpp" />
     <ClInclude Include="descriptor_heap.hpp" />
     <ClInclude Include="gpu_buffer.hpp" />

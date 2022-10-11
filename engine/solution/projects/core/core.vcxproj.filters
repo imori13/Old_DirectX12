@@ -94,6 +94,9 @@
     <ClInclude Include="winapp.hpp">
       <Filter>source\core</Filter>
     </ClInclude>
+    <ClInclude Include="d3d12_define.hpp">
+      <Filter>source\render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="simple_ps.hlsl">

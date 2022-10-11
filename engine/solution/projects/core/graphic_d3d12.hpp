@@ -2,11 +2,7 @@
 #include "winapp.hpp"
 #include "vertex.hpp"
 #include "gpu_buffer.hpp"
-
-namespace
-{
-	constexpr uint32_t FRAME_COUNT = 2;
-}
+#include "d3d12_define.hpp"
 
 struct alignas(256) _transform
 {
