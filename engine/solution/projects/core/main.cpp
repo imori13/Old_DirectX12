@@ -12,8 +12,8 @@ int32_t main()
 	d3d12->create_pipelines();
 
 	std::unique_ptr<descriptor_heap> m_heap_cbv;
-	gpu_buffer<vertex> m_vertex_buffer;
-	std::array<gpu_buffer<_transform>, FRAME_COUNT> m_constant_buffers;
+	std::unique_ptr<gpu_buffer<vertex>> m_vertex_buffer;
+	std::array< std::unique_ptr<gpu_buffer<_transform>>, FRAME_COUNT> m_constant_buffers;
 
 	HRESULT hr{};
 	const auto& device = d3d12->get_device();
@@ -36,20 +36,20 @@ int32_t main()
 		vertices.push_back(vertex{ func(i + 1,count) * length, vector4::one() });
 	}
 
-	m_vertex_buffer = gpu_buffer<vertex>(device, vertices.size() * sizeof(vertex));
-	m_vertex_buffer.map(vertices);
+	m_vertex_buffer = std::make_unique<gpu_buffer<vertex>>(device, vertices.size());
+	m_vertex_buffer->map(vertices);
 
 	_transform _trans{};
 	for (auto& buffer : m_constant_buffers)
 	{
-		buffer = gpu_buffer<_transform>(device, sizeof(_transform));
-		buffer.map(_trans);
+		buffer = std::make_unique<gpu_buffer<_transform>>(device);
+		buffer->map(_trans);
 	}
 
 	// bind heap
 	m_heap_cbv = std::make_unique<descriptor_heap>(device, FRAME_COUNT, heap_type::cbv_srv_uav, heap_flag::shader_visible);
 	for (auto& buffer : m_constant_buffers)
-		m_heap_cbv->create_cbv(buffer.get_resource());
+		m_heap_cbv->create_cbv(buffer->get_resource());
 
 	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f);
 	const auto& target_pos = DirectX::XMVectorZero();
@@ -60,12 +60,12 @@ int32_t main()
 
 	for (auto& buffer : m_constant_buffers)
 	{
-		buffer.get()->world = DirectX::XMMatrixIdentity();
-		buffer.get()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
-		buffer.get()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
+		buffer->get()->world = DirectX::XMMatrixIdentity();
+		buffer->get()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
+		buffer->get()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
 	}
 
-	const auto& vbv = m_vertex_buffer.get_vertex_buffer_view();
+	const auto& vbv = m_vertex_buffer->get_vertex_buffer_view();
 
 	while (app->isloop())
 	{
@@ -78,7 +78,7 @@ int32_t main()
 			s_angle += 0.01f;
 
 			auto& buffer = m_constant_buffers.at(d3d12->get_frame_index());
-			buffer.get()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
+			buffer->get()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
 		}
 
 		d3d12->render_begin();

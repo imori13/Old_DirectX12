@@ -16,8 +16,8 @@ public:
 		unmap();
 	}
 
-	gpu_buffer(gsl::not_null<ID3D12Device*> pDevice, size_t buffer_size)
-		: m_buffer_size(buffer_size)
+	gpu_buffer(gsl::not_null<ID3D12Device*> pDevice, size_t element_count = 1)
+		: m_buffer_size(sizeof(T) * element_count)
 		, m_resource(nullptr)
 		, m_ptr(nullptr)
 	{
@@ -33,7 +33,7 @@ public:
 		D3D12_RESOURCE_DESC desc{};
 		desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 		desc.Alignment = 0;
-		desc.Width = buffer_size;
+		desc.Width = m_buffer_size;
 		desc.Height = 1;
 		desc.DepthOrArraySize = 1;
 		desc.MipLevels = 1;
@@ -58,20 +58,25 @@ public:
 public:
 	inline void map(gsl::span<T> span)
 	{
-		// mapping
-		const auto& hr = m_resource->Map(0, nullptr, reinterpret_cast<void**>(&m_ptr));
-		Ensures(SUCCEEDED(hr));
+		/*  マップに失敗したか  */
+		Ensures(SUCCEEDED(m_resource->Map(0, nullptr, reinterpret_cast<void**>(&m_ptr))));
 
+		/*  マップするデータとサイズは同じか  */
 		Expects(span.size_bytes() == m_buffer_size);
+
+		/*  指定されたデータのメモリをコピーする  */
 		memcpy_s(m_ptr, m_buffer_size, span.data(), m_buffer_size);
 	}
 
 	inline void map(const T& value)
 	{
-		const auto& hr = m_resource->Map(0, nullptr, reinterpret_cast<void**>(&m_ptr));
-		Ensures(SUCCEEDED(hr));
+		/*  マップに失敗したか  */
+		Ensures(SUCCEEDED(m_resource->Map(0, nullptr, reinterpret_cast<void**>(&m_ptr))));
 
+		/*  マップするデータとサイズは同じか  */
 		Expects(sizeof(value) == m_buffer_size);
+
+		/*  指定されたデータのメモリをコピーする  */
 		memcpy_s(m_ptr, m_buffer_size, &value, m_buffer_size);
 	}
 
