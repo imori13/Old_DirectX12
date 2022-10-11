@@ -8,6 +8,8 @@ namespace
 namespace math
 {
 	inline constexpr float pi = 3.1415927f;
+	inline constexpr float to_deg = 180.0f / pi;
+	inline constexpr float to_rad = pi / 180.0f;
 
 	inline constexpr float sin(float x);
 	inline constexpr float cos(float x);

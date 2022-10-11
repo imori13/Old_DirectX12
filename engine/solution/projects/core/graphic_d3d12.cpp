@@ -277,6 +277,8 @@ void graphic_d3d12::render_init()
 void graphic_d3d12::set_vertexbuffer_view(const D3D12_VERTEX_BUFFER_VIEW& vbv)
 {
 	m_command_list->IASetVertexBuffers(0, 1, &vbv);
+
+	m_draw_vertex_count = vbv.SizeInBytes / vbv.StrideInBytes;
 }
 
 void graphic_d3d12::set_constantbuffer(const gsl::not_null<descriptor_heap*> heap)
@@ -287,7 +289,7 @@ void graphic_d3d12::set_constantbuffer(const gsl::not_null<descriptor_heap*> hea
 
 void graphic_d3d12::render()
 {
-	m_command_list->DrawInstanced(3, 1, 0, 0);
+	m_command_list->DrawInstanced(m_draw_vertex_count, 1, 0, 0);
 }
 
 void graphic_d3d12::render_end()

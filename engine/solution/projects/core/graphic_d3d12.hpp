@@ -64,6 +64,7 @@ private:
 
 	HANDLE m_fence_event = {};
 	uint32_t m_frame_index = 0;
+	uint32_t m_draw_vertex_count = 0;
 
 	std::array<uint64_t, FRAME_COUNT> m_fence_counter = {};
 

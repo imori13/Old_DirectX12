@@ -19,12 +19,23 @@ int32_t main()
 	HRESULT hr{};
 	const auto& device = d3d12->get_device();
 
-	std::vector<vertex> vertices =
+	std::vector<vertex> vertices;
+
+	constexpr float count = 500;
+	for (auto i = 0; i < count; ++i)
 	{
-		vertex{ vector3(-1.0f,-1.0f, 0.0f), vector4(0.0f, 0.0f, 1.0f, 1.0f)},
-		vertex{ vector3(1.0f,-1.0f, 0.0f), vector4(0.0f, 1.0f, 0.0f, 1.0f)},
-		vertex{ vector3(0.0f, 1.0f, 0.0f), vector4(1.0f, 0.0f, 0.0f, 1.0f)},
-	};
+		static const auto& func = [](const uint32_t index, const uint32_t count) -> vector3
+		{
+			const auto& rad = 360.0f * index / count * math::to_rad;
+			return vector3(math::cos(rad), math::sin(rad), 0);
+		};
+
+		const float length = rand() % 1000 / 1000.f;
+
+		vertices.push_back(vertex{ vector3::zero(), vector4(1, 1, 1, 1) });
+		vertices.push_back(vertex{ func(i,count) * length, vector4(1, 1, 1, 1) });
+		vertices.push_back(vertex{ func(i + 1,count) * length, vector4(1, 1, 1, 1) });
+	}
 
 	m_vertex_buffer = gpu_buffer<vertex>(device, vertices.size() * sizeof(vertex));
 
