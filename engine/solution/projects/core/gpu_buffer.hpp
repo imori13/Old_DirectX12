@@ -66,15 +66,21 @@ public:
 		memcpy_s(m_ptr, m_buffer_size, span.data(), m_buffer_size);
 	}
 
+	inline void map(const T& value)
+	{
+		const auto& hr = m_resource->Map(0, nullptr, reinterpret_cast<void**>(&m_ptr));
+		Ensures(SUCCEEDED(hr));
+
+		Expects(sizeof(value) == m_buffer_size);
+		memcpy_s(m_ptr, m_buffer_size, &value, m_buffer_size);
+	}
+
 	inline void unmap() const noexcept
 	{
 		m_resource->Unmap(0, nullptr);
 	}
 
-	inline gsl::not_null<T*> get()
-	{
-		return m_ptr;
-	}
+	inline gsl::not_null<T*> get() { return m_ptr; }
 
 	// vertex_buffer_view
 	inline D3D12_VERTEX_BUFFER_VIEW get_vertex_buffer_view()

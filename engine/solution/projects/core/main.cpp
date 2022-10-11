@@ -10,7 +10,6 @@ int32_t main()
 
 	d3d12->create_devices();
 	d3d12->create_pipelines();
-	//d3d12->create_render_objects();
 
 	std::unique_ptr<descriptor_heap> m_heap_cbv;
 	gpu_buffer<vertex> m_vertex_buffer;
@@ -30,33 +29,27 @@ int32_t main()
 			return vector3(math::cos(rad), math::sin(rad), 0);
 		};
 
-		const float length = rand() % 1000 / 1000.f;
+		const float length = std::lerp(0.25f, 1.5f, rand() % 1000 / 1000.f);
 
-		vertices.push_back(vertex{ vector3::zero(), vector4::one()});
+		vertices.push_back(vertex{ vector3::zero(), vector4::one() });
 		vertices.push_back(vertex{ func(i,count) * length, vector4::one() });
 		vertices.push_back(vertex{ func(i + 1,count) * length, vector4::one() });
 	}
 
 	m_vertex_buffer = gpu_buffer<vertex>(device, vertices.size() * sizeof(vertex));
-
 	m_vertex_buffer.map(vertices);
 
 	_transform _trans{};
-
-	// create constant buffer
-	for (auto i = 0; i < m_constant_buffers.size(); ++i)
+	for (auto& buffer : m_constant_buffers)
 	{
-		m_constant_buffers.at(i) = gpu_buffer<_transform>(device, sizeof(_transform));
-		m_constant_buffers.at(i).map(gsl::make_span<_transform>(&_trans, 1));
+		buffer = gpu_buffer<_transform>(device, sizeof(_transform));
+		buffer.map(_trans);
 	}
 
 	// bind heap
 	m_heap_cbv = std::make_unique<descriptor_heap>(device, FRAME_COUNT, heap_type::cbv_srv_uav, heap_flag::shader_visible);
-
-	for (auto i = 0; i < m_constant_buffers.size(); ++i)
-	{
-		m_heap_cbv->create_cbv(m_constant_buffers.at(i).get_resource());
-	}
+	for (auto& buffer : m_constant_buffers)
+		m_heap_cbv->create_cbv(buffer.get_resource());
 
 	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f);
 	const auto& target_pos = DirectX::XMVectorZero();
