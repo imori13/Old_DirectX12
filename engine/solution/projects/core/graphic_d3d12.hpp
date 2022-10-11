@@ -44,6 +44,9 @@ public:
 	inline const uint32_t get_frame_index() const noexcept { return m_frame_index; }
 
 private:
+	void resource_barrier(const D3D12_RESOURCE_STATES state);
+
+private:
 	const winapp& m_winapp;
 
 	Microsoft::WRL::ComPtr<ID3D12Device> m_device;
@@ -63,4 +66,6 @@ private:
 	uint32_t m_frame_index = 0;
 
 	std::array<uint64_t, FRAME_COUNT> m_fence_counter = {};
+
+	D3D12_RESOURCE_STATES prev_state = D3D12_RESOURCE_STATE_PRESENT;
 };

@@ -255,18 +255,9 @@ void graphic_d3d12::render_begin()
 	m_command_allocator.at(m_frame_index)->Reset();
 	m_command_list->Reset(m_command_allocator.at(m_frame_index).Get(), nullptr);
 
-	// resource barrier
-	D3D12_RESOURCE_BARRIER barrier{};
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = m_color_buffer.at(m_frame_index).Get();
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
+	resource_barrier(D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	const auto& aa = m_heap_rtv->at(m_frame_index).cpu_handle;
-	m_command_list->ResourceBarrier(1, &barrier);
 	m_command_list->OMSetRenderTargets(1, &aa, FALSE, nullptr);
 
 	constexpr const std::array<float, 4> clear_color = { 0.125f,0.1f,0.1f,1.0f };
@@ -301,16 +292,7 @@ void graphic_d3d12::render()
 
 void graphic_d3d12::render_end()
 {
-	// resource barrier
-	D3D12_RESOURCE_BARRIER barrier{};
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = m_color_buffer.at(m_frame_index).Get();
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
-	m_command_list->ResourceBarrier(1, &barrier);
+	resource_barrier(D3D12_RESOURCE_STATE_PRESENT);
 
 	// close command
 	m_command_list->Close();
@@ -354,4 +336,21 @@ void graphic_d3d12::wait_gpu()
 	WaitForSingleObjectEx(m_fence_event, INFINITE, false);
 
 	++m_fence_counter.at(m_frame_index);
+}
+
+void graphic_d3d12::resource_barrier(const D3D12_RESOURCE_STATES state)
+{
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = m_color_buffer.at(m_frame_index).Get();
+	barrier.Transition.StateBefore = prev_state;
+	barrier.Transition.StateAfter = state;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+	/*  リソースバリア  */
+	m_command_list->ResourceBarrier(1, &barrier);
+
+	/*  状態の更新  */
+	prev_state = state;
 }
