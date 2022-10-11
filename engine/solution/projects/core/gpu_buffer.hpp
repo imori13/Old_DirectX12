@@ -11,6 +11,11 @@ public:
 	{
 	}
 
+	~gpu_buffer()
+	{
+		unmap();
+	}
+
 	gpu_buffer(gsl::not_null<ID3D12Device*> pDevice, size_t buffer_size)
 		: m_buffer_size(buffer_size)
 		, m_resource(nullptr)
@@ -59,8 +64,11 @@ public:
 
 		Expects(span.size_bytes() == m_buffer_size);
 		memcpy_s(m_ptr, m_buffer_size, span.data(), m_buffer_size);
+	}
 
-		//m_resource->Unmap(0, nullptr);
+	inline void unmap() const noexcept
+	{
+		m_resource->Unmap(0, nullptr);
 	}
 
 	inline gsl::not_null<T*> get()

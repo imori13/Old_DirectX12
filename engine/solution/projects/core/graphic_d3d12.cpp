@@ -25,14 +25,14 @@ namespace
 graphic_d3d12::graphic_d3d12(const winapp& winapp)
 	: m_winapp(winapp)
 {
-	
+
 }
 
 graphic_d3d12::~graphic_d3d12() noexcept(false)
 {
 	wait_gpu();
 
-	if(m_fence_event != nullptr)
+	if (m_fence_event != nullptr)
 	{
 		CloseHandle(m_fence_event);
 		m_fence_event = nullptr;
@@ -64,7 +64,7 @@ void graphic_d3d12::create_devices()
 
 	// create command allocator
 	{
-		for(auto& command_allocator : m_command_allocator)
+		for (auto& command_allocator : m_command_allocator)
 		{
 			command_allocator = create_command_allocator(m_device.Get());
 		}
@@ -79,7 +79,7 @@ void graphic_d3d12::create_devices()
 	{
 		m_heap_rtv = std::make_unique<descriptor_heap>(m_device.Get(), FRAME_COUNT, heap_type::rtv);
 
-		for(auto i = 0u; i < m_color_buffer.size(); ++i)
+		for (auto i = 0u; i < m_color_buffer.size(); ++i)
 		{
 			m_color_buffer.at(i) = get_color_buffer(m_swapchain.Get(), i);
 
@@ -90,7 +90,7 @@ void graphic_d3d12::create_devices()
 	// create fence
 	{
 		// reset counter
-		for(auto& fence_counter : m_fence_counter)
+		for (auto& fence_counter : m_fence_counter)
 		{
 			fence_counter = 0;
 		}
@@ -199,7 +199,7 @@ void graphic_d3d12::create_pipelines()
 	D3D12_BLEND_DESC descBS{};
 	descBS.AlphaToCoverageEnable = false;
 	descBS.IndependentBlendEnable = false;
-	for(auto i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+	for (auto i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
 	{
 		gsl::at(descBS.RenderTarget, i) = descRTBS;
 	}
@@ -249,63 +249,6 @@ void graphic_d3d12::create_pipelines()
 	scissor.bottom = m_winapp.get_height();
 }
 
-void graphic_d3d12::create_render_objects()
-{
-	HRESULT hr{};
-
-	std::vector<vertex> vertices =
-	{
-		vertex{ vector3(-1.0f,-1.0f, 0.0f), vector4(0.0f, 0.0f, 1.0f, 1.0f)},
-		vertex{ vector3(1.0f,-1.0f, 0.0f), vector4(0.0f, 1.0f, 0.0f, 1.0f)},
-		vertex{ vector3(0.0f, 1.0f, 0.0f), vector4(1.0f, 0.0f, 0.0f, 1.0f)},
-	};
-
-	m_vertex_buffer = gpu_buffer<vertex>(m_device.Get(), vertices.size() * sizeof(vertex));
-
-	m_vertex_buffer.map(vertices);
-
-	_transform _trans{};
-
-	// create constant buffer
-	for(auto i = 0; i < m_constant_buffers.size(); ++i)
-	{
-		m_constant_buffers.at(i) = gpu_buffer<_transform>(m_device.Get(), sizeof(_transform));
-		m_constant_buffers.at(i).map(gsl::make_span<_transform>(&_trans, 1));
-	}
-
-	// bind heap
-	m_heap_cbv = std::make_unique<descriptor_heap>(m_device.Get(), FRAME_COUNT, heap_type::cbv_srv_uav, heap_flag::shader_visible);
-
-	for(auto i = 0; i < m_constant_buffers.size(); ++i)
-	{
-		m_heap_cbv->create_cbv(m_constant_buffers.at(i).get_resource());
-	}
-
-	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f);
-	const auto& target_pos = DirectX::XMVectorZero();
-	const auto& up_ward = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	const auto& fov_y = DirectX::XMConvertToRadians(37.5f);
-	const auto& aspect = static_cast<float>(m_winapp.get_width()) / static_cast<float>(m_winapp.get_height());
-
-	for(auto& buffer : m_constant_buffers)
-	{
-		buffer.get()->world = DirectX::XMMatrixIdentity();
-		buffer.get()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
-		buffer.get()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
-	}
-}
-
-void graphic_d3d12::update()
-{
-	static float s_angle = 0.f;
-
-	s_angle += 0.01f;
-
-	auto& buffer = m_constant_buffers.at(m_frame_index);
-	buffer.get()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
-}
-
 void graphic_d3d12::render_begin()
 {
 	// start commandt
@@ -331,22 +274,29 @@ void graphic_d3d12::render_begin()
 	m_command_list->ClearRenderTargetView(m_heap_rtv->at(m_frame_index).cpu_handle, clear_color.data(), 0, nullptr);
 }
 
+void graphic_d3d12::render_init()
+{
+	m_command_list->SetGraphicsRootSignature(m_root_signature.Get());
+	m_command_list->SetPipelineState(m_pipeline.Get());
+	m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_command_list->RSSetViewports(1, &viewport);
+	m_command_list->RSSetScissorRects(1, &scissor);
+}
+
+void graphic_d3d12::set_vertexbuffer_view(const D3D12_VERTEX_BUFFER_VIEW& vbv)
+{
+	m_command_list->IASetVertexBuffers(0, 1, &vbv);
+}
+
+void graphic_d3d12::set_constantbuffer(const gsl::not_null<descriptor_heap*> heap)
+{
+	m_command_list->SetDescriptorHeaps(1, heap->get_address());
+	m_command_list->SetGraphicsRootConstantBufferView(0, heap->get_cbv_view_desc().BufferLocation);
+}
+
 void graphic_d3d12::render()
 {
-	// 描画処理5
-	{
-		const auto& vbv = m_vertex_buffer.get_vertex_buffer_view();
-
-		m_command_list->SetGraphicsRootSignature(m_root_signature.Get());
-		m_command_list->SetDescriptorHeaps(1, m_heap_cbv->get_address());
-		m_command_list->SetGraphicsRootConstantBufferView(0, m_heap_cbv->get_cbv_view_desc().BufferLocation);
-		m_command_list->SetPipelineState(m_pipeline.Get());
-		m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_command_list->IASetVertexBuffers(0, 1, &vbv);
-		m_command_list->RSSetViewports(1, &viewport);
-		m_command_list->RSSetScissorRects(1, &scissor);
-		m_command_list->DrawInstanced(3, 1, 0, 0);
-	}
+	m_command_list->DrawInstanced(3, 1, 0, 0);
 }
 
 void graphic_d3d12::render_end()
@@ -368,23 +318,30 @@ void graphic_d3d12::render_end()
 	// exture
 	std::array<ID3D12CommandList*, 1> ppCmdLists = { m_command_list.Get() };
 	m_command_queue->ExecuteCommandLists(1, ppCmdLists.data());
+}
 
-	// ------------------------------------------------------------------------------------------
-
+void graphic_d3d12::present()
+{
+	/*  画面に表示  */
 	constexpr uint32_t interval = 1;
 	m_swapchain->Present(interval, 0);
 
 	const auto currentValue = m_fence_counter.at(m_frame_index);
+
+	/*  シグナル処理 */
 	m_command_queue->Signal(m_fence.Get(), currentValue);
 
+	/*  バックバッファ番号を更新  */
 	m_frame_index = m_swapchain->GetCurrentBackBufferIndex();
 
-	if(m_fence->GetCompletedValue() < m_fence_counter.at(m_frame_index))
+	/*  次のフレームの描画準備がまだであれば待機する  */
+	if (m_fence->GetCompletedValue() < m_fence_counter.at(m_frame_index))
 	{
 		m_fence->SetEventOnCompletion(m_fence_counter.at(m_frame_index), m_fence_event);
 		WaitForSingleObjectEx(m_fence_event, INFINITE, false);
 	}
 
+	/* 次のフレームのフェンスカウンターを増やす */
 	m_fence_counter.at(m_frame_index) = currentValue + 1;
 }
 
