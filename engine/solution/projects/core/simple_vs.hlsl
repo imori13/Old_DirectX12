@@ -1,4 +1,4 @@
-﻿struct vs_input
+struct vs_input
 {
     float3 position : POSITION;
     float4 color : COLOR;
