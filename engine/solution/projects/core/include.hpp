@@ -15,8 +15,7 @@ using namespace math;
 
 /*  render  */
 #include "d3d12_factory.hpp"
-#include "descriptor_heap.hpp"
-#include "gpu_buffer.hpp"
-#include "graphic_d3d12.hpp"
-#include "swapchain.hpp"
+#include "d3d12_descriptor_heap.hpp"
+#include "d3d12_gpu_buffer.hpp"
+#include "d3d12.hpp"
 #include "vertex.hpp"

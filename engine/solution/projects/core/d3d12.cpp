@@ -1,10 +1,4 @@
-﻿#include "pch.hpp"
-#include "graphic_d3d12.hpp"
-#include "descriptor_heap.hpp"
-#include "gpu_buffer.hpp"
-#include "d3d12_factory.hpp"
-
-using namespace Microsoft::WRL;
+﻿using namespace Microsoft::WRL;
 
 namespace
 {

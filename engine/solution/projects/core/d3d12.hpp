@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "winapp.hpp"
 #include "vertex.hpp"
-#include "gpu_buffer.hpp"
 #include "d3d12_define.hpp"
 
 struct alignas(256) _transform

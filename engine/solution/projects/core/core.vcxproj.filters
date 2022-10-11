@@ -32,16 +32,10 @@
     <ClCompile Include="d3d12_factory.cpp">
       <Filter>source\render</Filter>
     </ClCompile>
-    <ClCompile Include="descriptor_heap.cpp">
+    <ClCompile Include="d3d12_descriptor_heap.cpp">
       <Filter>source\render</Filter>
     </ClCompile>
-    <ClCompile Include="gpu_buffer.cpp">
-      <Filter>source\render</Filter>
-    </ClCompile>
-    <ClCompile Include="graphic_d3d12.cpp">
-      <Filter>source\render</Filter>
-    </ClCompile>
-    <ClCompile Include="swapchain.cpp">
+    <ClCompile Include="d3d12.cpp">
       <Filter>source\render</Filter>
     </ClCompile>
     <ClCompile Include="winapp.cpp">
@@ -73,22 +67,19 @@
     <ClInclude Include="vector4.hpp">
       <Filter>source\math</Filter>
     </ClInclude>
-    <ClInclude Include="descriptor_heap.hpp">
+    <ClInclude Include="d3d12_descriptor_heap.hpp">
       <Filter>source\render</Filter>
     </ClInclude>
     <ClInclude Include="d3d12_factory.hpp">
       <Filter>source\render</Filter>
     </ClInclude>
-    <ClInclude Include="gpu_buffer.hpp">
+    <ClInclude Include="d3d12_gpu_buffer.hpp">
       <Filter>source\render</Filter>
     </ClInclude>
-    <ClInclude Include="graphic_d3d12.hpp">
+    <ClInclude Include="d3d12.hpp">
       <Filter>source\render</Filter>
     </ClInclude>
     <ClInclude Include="vertex.hpp">
-      <Filter>source\render</Filter>
-    </ClInclude>
-    <ClInclude Include="swapchain.hpp">
       <Filter>source\render</Filter>
     </ClInclude>
     <ClInclude Include="winapp.hpp">
