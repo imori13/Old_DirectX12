@@ -1,4 +1,4 @@
-#include "pch.hpp"
+﻿#include "pch.hpp"
 #include "d3d12_factory.hpp"
 
 using namespace Microsoft::WRL;

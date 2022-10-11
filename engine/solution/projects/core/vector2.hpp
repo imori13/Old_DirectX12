@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace
 {
@@ -52,7 +52,7 @@ namespace math
 		std::array<T, VEC2_COUNT> _;
 	};
 
-	/*  -----  using�錾  -----------------------------------  */
+	/*  -----  using宣言  -----------------------------------  */
 
 	using vector2 = basic_vector2<float>;
 	using vector2f = basic_vector2<float>;
@@ -60,7 +60,7 @@ namespace math
 	using vector2i = basic_vector2<int32_t>;
 	using vector2u = basic_vector2<uint32_t>;
 
-	/*  -----  inline��`  -----------------------------------  */
+	/*  -----  inline定義  -----------------------------------  */
 
 	template<typename T> inline constexpr basic_vector2<T>::basic_vector2() : basic_vector2(0) {}
 	template<typename T> inline constexpr basic_vector2<T>::basic_vector2(T value) : basic_vector2(value, value) {}

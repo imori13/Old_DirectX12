@@ -1,4 +1,4 @@
-#include "pch.hpp"
+ï»¿#include "pch.hpp"
 #include "graphic_d3d12.hpp"
 #include "descriptor_heap.hpp"
 #include "gpu_buffer.hpp"
@@ -154,7 +154,7 @@ void graphic_d3d12::create_pipelines()
 		blob->GetBufferSize(),
 		IID_PPV_ARGS(m_root_signature.GetAddressOf()));
 
-	// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒg
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆ
 	std::array<D3D12_INPUT_ELEMENT_DESC, FRAME_COUNT> elements{};
 	elements.at(0).SemanticName = "POSITION";
 	elements.at(0).SemanticIndex = 0;
@@ -172,7 +172,7 @@ void graphic_d3d12::create_pipelines()
 	elements.at(1).InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 	elements.at(1).InstanceDataStepRate = 0;
 
-	// ƒ‰ƒXƒ^ƒ‰ƒCƒU[ƒXƒe[ƒg
+	// ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆ
 	D3D12_RASTERIZER_DESC descRS{};
 	descRS.FillMode = D3D12_FILL_MODE_SOLID;
 	descRS.CullMode = D3D12_CULL_MODE_NONE;
@@ -186,7 +186,7 @@ void graphic_d3d12::create_pipelines()
 	descRS.ForcedSampleCount = 0;
 	descRS.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ÌƒuƒŒƒ“ƒhİ’è
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ–ãƒ¬ãƒ³ãƒ‰è¨­å®š
 	D3D12_RENDER_TARGET_BLEND_DESC descRTBS{
 		false,false,
 		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
@@ -195,7 +195,7 @@ void graphic_d3d12::create_pipelines()
 		D3D12_COLOR_WRITE_ENABLE_ALL
 	};
 
-	// ƒuƒŒƒ“ƒhƒXƒe[ƒg‚Ìİ’è
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
 	D3D12_BLEND_DESC descBS{};
 	descBS.AlphaToCoverageEnable = false;
 	descBS.IndependentBlendEnable = false;
@@ -207,14 +207,14 @@ void graphic_d3d12::create_pipelines()
 	ComPtr<ID3DBlob> vs_blob;
 	ComPtr<ID3DBlob> ps_blob;
 
-	// ’¸“_ƒVƒF[ƒ_‚Ì“Ç‚İ‚İ
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ã®èª­ã¿è¾¼ã¿
 	hr = D3DReadFileToBlob(L"simple_vs.cso", vs_blob.GetAddressOf());
 	Ensures(SUCCEEDED(hr));
 
 	hr = D3DReadFileToBlob(L"simple_ps.cso", ps_blob.GetAddressOf());
 	Ensures(SUCCEEDED(hr));
 
-	// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒg‚Ìİ’è
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc_pipeline_state{};
 	desc_pipeline_state.InputLayout = D3D12_INPUT_LAYOUT_DESC{ elements.data(),gsl::narrow<UINT>(elements.size()) };
 	desc_pipeline_state.pRootSignature = m_root_signature.Get();
@@ -304,26 +304,26 @@ void graphic_d3d12::render_end()
 
 void graphic_d3d12::present()
 {
-	/*  ‰æ–Ê‚É•\¦  */
+	/*  ç”»é¢ã«è¡¨ç¤º  */
 	constexpr uint32_t interval = 1;
 	m_swapchain->Present(interval, 0);
 
 	const auto currentValue = m_fence_counter.at(m_frame_index);
 
-	/*  ƒVƒOƒiƒ‹ˆ— */
+	/*  ã‚·ã‚°ãƒŠãƒ«å‡¦ç† */
 	m_command_queue->Signal(m_fence.Get(), currentValue);
 
-	/*  ƒoƒbƒNƒoƒbƒtƒ@”Ô†‚ğXV  */
+	/*  ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ç•ªå·ã‚’æ›´æ–°  */
 	m_frame_index = m_swapchain->GetCurrentBackBufferIndex();
 
-	/*  Ÿ‚ÌƒtƒŒ[ƒ€‚Ì•`‰æ€”õ‚ª‚Ü‚¾‚Å‚ ‚ê‚Î‘Ò‹@‚·‚é  */
+	/*  æ¬¡ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®æç”»æº–å‚™ãŒã¾ã ã§ã‚ã‚Œã°å¾…æ©Ÿã™ã‚‹  */
 	if (m_fence->GetCompletedValue() < m_fence_counter.at(m_frame_index))
 	{
 		m_fence->SetEventOnCompletion(m_fence_counter.at(m_frame_index), m_fence_event);
 		WaitForSingleObjectEx(m_fence_event, INFINITE, false);
 	}
 
-	/* Ÿ‚ÌƒtƒŒ[ƒ€‚ÌƒtƒFƒ“ƒXƒJƒEƒ“ƒ^[‚ğ‘‚â‚· */
+	/* æ¬¡ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®ãƒ•ã‚§ãƒ³ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚’å¢—ã‚„ã™ */
 	m_fence_counter.at(m_frame_index) = currentValue + 1;
 }
 
@@ -348,9 +348,9 @@ void graphic_d3d12::resource_barrier(const D3D12_RESOURCE_STATES state)
 	barrier.Transition.StateAfter = state;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-	/*  ƒŠƒ\[ƒXƒoƒŠƒA  */
+	/*  ãƒªã‚½ãƒ¼ã‚¹ãƒãƒªã‚¢  */
 	m_command_list->ResourceBarrier(1, &barrier);
 
-	/*  ó‘Ô‚ÌXV  */
+	/*  çŠ¶æ…‹ã®æ›´æ–°  */
 	prev_state = state;
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace
 {
@@ -20,7 +20,7 @@ namespace math
 	inline constexpr float sin(float x)
 	{
 		constexpr float p = (2.0f * pi);
-		x -= gsl::narrow_cast<uint32_t>(x / p) * p; // -2�΁`2�΂ɂ���
+		x -= gsl::narrow_cast<uint32_t>(x / p) * p; // -2π～2πにする
 
 		float sum = x, t = x;
 		for(int i = 1; i <= LOOP_COUNT; i++)

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "winapp.hpp"
 #include "vertex.hpp"
 #include "gpu_buffer.hpp"
@@ -42,7 +42,7 @@ public:
 public:
 	inline const gsl::not_null<ID3D12Device*> get_device() const noexcept { return m_device.Get(); }
 	inline const uint32_t get_frame_index() const noexcept { return m_frame_index; }
-
+	
 private:
 	void resource_barrier(const D3D12_RESOURCE_STATES state);
 

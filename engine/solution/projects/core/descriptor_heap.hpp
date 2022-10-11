@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 enum class heap_type : uint8_t
 {

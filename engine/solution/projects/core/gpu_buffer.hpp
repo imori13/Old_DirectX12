@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "vertex.hpp"
 
 template<class T> class gpu_buffer

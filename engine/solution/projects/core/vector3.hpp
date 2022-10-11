@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace
 {
@@ -70,7 +70,7 @@ namespace math
 		std::array<T, VEC3_COUNT> _;
 	};
 
-	/*  -----  using�錾  -----------------------------------  */
+	/*  -----  using宣言  -----------------------------------  */
 
 	using vector3 = basic_vector3<float>;
 	using vector3f = basic_vector3<float>;
@@ -78,7 +78,7 @@ namespace math
 	using vector3i = basic_vector3<int32_t>;
 	using vector3u = basic_vector3<uint32_t>;
 
-	/*  -----  inline��`  -----------------------------------  */
+	/*  -----  inline定義  -----------------------------------  */
 
 	template<typename T> inline constexpr basic_vector3<T>::basic_vector3() noexcept : basic_vector3(0) {}
 	template<typename T> inline constexpr basic_vector3<T>::basic_vector3(T value) noexcept : basic_vector3(value, value, value) {}
