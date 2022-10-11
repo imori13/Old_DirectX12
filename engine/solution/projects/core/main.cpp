@@ -32,9 +32,9 @@ int32_t main()
 
 		const float length = rand() % 1000 / 1000.f;
 
-		vertices.push_back(vertex{ vector3::zero(), vector4(1, 1, 1, 1) });
-		vertices.push_back(vertex{ func(i,count) * length, vector4(1, 1, 1, 1) });
-		vertices.push_back(vertex{ func(i + 1,count) * length, vector4(1, 1, 1, 1) });
+		vertices.push_back(vertex{ vector3::zero(), vector4::one()});
+		vertices.push_back(vertex{ func(i,count) * length, vector4::one() });
+		vertices.push_back(vertex{ func(i + 1,count) * length, vector4::one() });
 	}
 
 	m_vertex_buffer = gpu_buffer<vertex>(device, vertices.size() * sizeof(vertex));

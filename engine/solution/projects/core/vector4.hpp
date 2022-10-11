@@ -53,6 +53,10 @@ namespace math
 		inline constexpr basic_vector4 normalized() const;
 		inline constexpr float dot(const basic_vector4& other) const;
 
+	public:
+		static inline constexpr basic_vector4 one() noexcept;
+		static inline constexpr basic_vector4 zero() noexcept;
+
 	private:
 		std::array<T, VEC4_COUNT> _;
 	};
@@ -146,4 +150,7 @@ namespace math
 	{
 		return x() * other.x() + y() * other.y() + z() * other.z() + w() * other.w();
 	}
+
+	template<typename T> inline constexpr basic_vector4<T> basic_vector4<T>::one() noexcept { return basic_vector4(1, 1, 1, 1); }
+	template<typename T> inline constexpr basic_vector4<T> basic_vector4<T>::zero() noexcept { return basic_vector4(0, 0, 0, 0); }
 }
