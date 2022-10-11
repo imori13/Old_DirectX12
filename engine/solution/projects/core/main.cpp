@@ -6,7 +6,7 @@ int32_t main()
 #endif
 
 	const auto& app = std::make_unique<winapp>(800, 450);
-	const auto& d3d12 = std::make_unique<graphic_d3d12>(*app.get());
+	const auto& d3d12 = std::make_unique<graphic_d3d12>(*app);
 
 	d3d12->create_devices();
 	d3d12->create_pipelines();
@@ -54,15 +54,14 @@ int32_t main()
 	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f);
 	const auto& target_pos = DirectX::XMVectorZero();
 	const auto& up_ward = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
 	const auto& fov_y = DirectX::XMConvertToRadians(37.5f);
 	const auto& aspect = static_cast<float>(app->get_width()) / static_cast<float>(app->get_height());
 
 	for (auto& buffer : m_constant_buffers)
 	{
-		buffer->get()->world = DirectX::XMMatrixIdentity();
-		buffer->get()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
-		buffer->get()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
+		buffer->data()->world = DirectX::XMMatrixIdentity();
+		buffer->data()->view = DirectX::XMMatrixLookAtRH(eye_pos, target_pos, up_ward);
+		buffer->data()->proj = DirectX::XMMatrixPerspectiveFovRH(fov_y, aspect, 1.0f, 1000.0f);
 	}
 
 	const auto& vbv = m_vertex_buffer->get_vertex_buffer_view();
@@ -78,7 +77,7 @@ int32_t main()
 			s_angle += 0.01f;
 
 			auto& buffer = m_constant_buffers.at(d3d12->get_frame_index());
-			buffer->get()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
+			buffer->data()->world = DirectX::XMMatrixIdentity() * DirectX::XMMatrixRotationZ(s_angle);
 		}
 
 		d3d12->render_begin();

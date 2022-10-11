@@ -85,7 +85,7 @@ public:
 		m_resource->Unmap(0, nullptr);
 	}
 
-	inline gsl::not_null<T*> get() { return m_ptr; }
+	inline gsl::not_null<T*> data() { return m_ptr; }
 
 	// vertex_buffer_view
 	inline D3D12_VERTEX_BUFFER_VIEW get_vertex_buffer_view()
