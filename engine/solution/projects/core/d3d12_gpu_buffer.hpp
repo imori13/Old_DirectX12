@@ -16,32 +16,16 @@ public:
 		unmap();
 	}
 
-	gpu_buffer(gsl::not_null<ID3D12Device*> pDevice, size_t element_count = 1)
-		: m_buffer_size(sizeof(T) * element_count)
+	gpu_buffer(gsl::not_null<ID3D12Device*> pDevice, size_t buffer_size)
+		: m_buffer_size(buffer_size)
 		, m_resource(nullptr)
 		, m_ptr(nullptr)
 	{
-		// setting heap
-		D3D12_HEAP_PROPERTIES prop{};
-		prop.Type = D3D12_HEAP_TYPE_UPLOAD;
-		prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-		prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-		prop.CreationNodeMask = 1;
-		prop.VisibleNodeMask = 1;
+		/*  ヒープ設定  */
+		const auto& prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 
-		// setting resource
-		D3D12_RESOURCE_DESC desc{};
-		desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-		desc.Alignment = 0;
-		desc.Width = m_buffer_size;
-		desc.Height = 1;
-		desc.DepthOrArraySize = 1;
-		desc.MipLevels = 1;
-		desc.Format = DXGI_FORMAT_UNKNOWN;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
-		desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-		desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		/*  リソース設定  */
+		const auto& desc = CD3DX12_RESOURCE_DESC::Buffer(m_buffer_size);
 
 		// create resource
 		const auto& hr = pDevice->CreateCommittedResource(
@@ -56,7 +40,7 @@ public:
 	}
 
 public:
-	inline void map(gsl::span<T> span)
+	inline void map(const gsl::span<T> span)
 	{
 		/*  マップに失敗したか  */
 		Ensures(SUCCEEDED(m_resource->Map(0, nullptr, reinterpret_cast<void**>(&m_ptr))));
@@ -87,14 +71,24 @@ public:
 
 	inline gsl::not_null<T*> data() { return m_ptr; }
 
-	// vertex_buffer_view
-	inline D3D12_VERTEX_BUFFER_VIEW get_vertex_buffer_view()
+	/*  頂点バッファビューを取得  */
+	inline D3D12_VERTEX_BUFFER_VIEW get_vertex_buffer_view() const
 	{
-		D3D12_VERTEX_BUFFER_VIEW vertexbuffer_view{};
-		vertexbuffer_view.BufferLocation = m_resource->GetGPUVirtualAddress();
-		vertexbuffer_view.SizeInBytes = gsl::narrow<UINT>(m_buffer_size);
-		vertexbuffer_view.StrideInBytes = gsl::narrow<UINT>(sizeof(T));
-		return vertexbuffer_view;
+		D3D12_VERTEX_BUFFER_VIEW vbv{};
+		vbv.BufferLocation = m_resource->GetGPUVirtualAddress();
+		vbv.SizeInBytes = gsl::narrow<UINT>(m_buffer_size);
+		vbv.StrideInBytes = gsl::narrow<UINT>(sizeof(T));
+		return vbv;
+	}
+
+	/*  インデックスバッファビューを取得  */
+	inline D3D12_INDEX_BUFFER_VIEW get_index_buffer_view() const
+	{
+		D3D12_INDEX_BUFFER_VIEW ibv{};
+		ibv.BufferLocation = m_resource->GetGPUVirtualAddress();
+		ibv.SizeInBytes = gsl::narrow<UINT>(m_buffer_size);
+		ibv.Format = DXGI_FORMAT_R32_UINT;
+		return ibv;
 	}
 
 public:

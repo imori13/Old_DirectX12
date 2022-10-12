@@ -246,22 +246,23 @@ void graphic_d3d12::render_init()
 	m_command_list->RSSetScissorRects(1, &scissor);
 }
 
-void graphic_d3d12::set_vertexbuffer_view(const D3D12_VERTEX_BUFFER_VIEW& vbv)
-{
-	m_command_list->IASetVertexBuffers(0, 1, &vbv);
-
-	m_draw_vertex_count = vbv.SizeInBytes / vbv.StrideInBytes;
-}
-
 void graphic_d3d12::set_constantbuffer(const gsl::not_null<descriptor_heap*> heap)
 {
 	m_command_list->SetDescriptorHeaps(1, heap->get_address());
 	m_command_list->SetGraphicsRootConstantBufferView(0, heap->get_cbv_view_desc().BufferLocation);
 }
 
-void graphic_d3d12::render()
+void graphic_d3d12::render(const D3D12_VERTEX_BUFFER_VIEW& vbv)
 {
-	m_command_list->DrawInstanced(m_draw_vertex_count, 1, 0, 0);
+	m_command_list->IASetVertexBuffers(0, 1, &vbv);
+	m_command_list->DrawInstanced(vbv.SizeInBytes / vbv.StrideInBytes, 1, 0, 0);
+}
+
+void graphic_d3d12::render(const D3D12_VERTEX_BUFFER_VIEW& vbv, const D3D12_INDEX_BUFFER_VIEW& ibv)
+{
+	m_command_list->IASetVertexBuffers(0, 1, &vbv);
+	m_command_list->IASetIndexBuffer(&ibv);
+	m_command_list->DrawIndexedInstanced(ibv.SizeInBytes / sizeof(uint32_t), 1, 0, 0, 0);
 }
 
 void graphic_d3d12::render_end()

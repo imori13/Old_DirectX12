@@ -14,36 +14,32 @@ int32_t main()
 
 	std::unique_ptr<descriptor_heap> m_heap_cbv;
 	std::unique_ptr<gpu_buffer<vertex>> m_vertex_buffer;
+	std::unique_ptr<gpu_buffer<uint32_t>> index_buffer;
 	std::array< std::unique_ptr<gpu_buffer<_transform>>, FRAME_COUNT> m_constant_buffers;
 
 	HRESULT hr{};
 	const auto& device = d3d12->get_device();
 
-	std::vector<vertex> vertices;
-
-	constexpr float count = 50;
-	for (auto i = 0; i < count; ++i)
+	std::vector<vertex> vertices =
 	{
-		static const auto& func = [](const uint32_t index, const uint32_t count) -> vector3
-		{
-			const auto& rad = 360.0f * index / count * math::to_rad;
-			return vector3(math::cos(rad), math::sin(rad), 0);
-		};
+		vertex{ vector3(-1, 1, 0), vector4(1, 0, 0, 1) },
+		vertex{ vector3(1, 1, 0), vector4(0, 1, 0, 1) },
+		vertex{ vector3(1,-1, 0), vector4(1, 0, 1, 1) },
+		vertex{ vector3(-1,-1, 0), vector4(1, 0, 1, 1) },
+	};
 
-		const float length = std::lerp(0.25f, 1.5f, rand() % 1000 / 1000.f);
+	std::vector<uint32_t> indices = { 0, 1, 2, 0, 2, 3 };
 
-		vertices.push_back(vertex{ vector3::zero(), vector4::one() });
-		vertices.push_back(vertex{ func(i,count) * length, vector4::one() });
-		vertices.push_back(vertex{ func(i + 1,count) * length, vector4::one() });
-	}
-
-	m_vertex_buffer = std::make_unique<gpu_buffer<vertex>>(device, vertices.size());
+	m_vertex_buffer = std::make_unique<gpu_buffer<vertex>>(device, vertices.size() * sizeof(vertex));
 	m_vertex_buffer->map(vertices);
+
+	index_buffer = std::make_unique<gpu_buffer<uint32_t>>(device, indices.size() * sizeof(uint32_t));
+	index_buffer->map(indices);
 
 	_transform _trans{};
 	for (auto& buffer : m_constant_buffers)
 	{
-		buffer = std::make_unique<gpu_buffer<_transform>>(device);
+		buffer = std::make_unique<gpu_buffer<_transform>>(device, sizeof(_transform));
 		buffer->map(_trans);
 	}
 
@@ -66,6 +62,7 @@ int32_t main()
 	}
 
 	const auto& vbv = m_vertex_buffer->get_vertex_buffer_view();
+	const auto& ibv = index_buffer->get_index_buffer_view();
 
 	while (app->isloop())
 	{
@@ -83,9 +80,8 @@ int32_t main()
 
 		d3d12->render_begin();
 		d3d12->render_init();
-		d3d12->set_vertexbuffer_view(vbv);
 		d3d12->set_constantbuffer(m_heap_cbv.get());
-		d3d12->render();
+		d3d12->render(vbv, ibv);
 		d3d12->render_end();
 		d3d12->present();
 	}

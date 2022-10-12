@@ -31,9 +31,9 @@ public:
 	void create_pipelines();
 	void render_begin();
 	void render_init();
-	void set_vertexbuffer_view(const D3D12_VERTEX_BUFFER_VIEW& vbv);
 	void set_constantbuffer(const gsl::not_null<descriptor_heap*> heap);
-	void render();
+	void render(const D3D12_VERTEX_BUFFER_VIEW& vbv);
+	void render(const D3D12_VERTEX_BUFFER_VIEW& vbv, const D3D12_INDEX_BUFFER_VIEW& ibv);
 	void render_end();
 	void present();
 	void wait_gpu();
@@ -63,7 +63,6 @@ private:
 
 	HANDLE m_fence_event = {};
 	uint32_t m_frame_index = 0;
-	uint32_t m_draw_vertex_count = 0;
 
 	std::array<uint64_t, FRAME_COUNT> m_fence_counter = {};
 
