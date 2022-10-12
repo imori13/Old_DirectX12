@@ -13,9 +13,9 @@
 
 using namespace math;
 
-/*  render  */
+/*  d3d12  */
+#include "d3d12.hpp"
 #include "d3d12_factory.hpp"
 #include "d3d12_descriptor_heap.hpp"
 #include "d3d12_gpu_buffer.hpp"
-#include "d3d12.hpp"
 #include "vertex.hpp"

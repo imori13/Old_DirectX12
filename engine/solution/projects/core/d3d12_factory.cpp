@@ -1,4 +1,6 @@
-﻿using namespace Microsoft::WRL;
+﻿#include "include.hpp"
+
+using namespace Microsoft::WRL;
 
 namespace d3d12_factory
 {

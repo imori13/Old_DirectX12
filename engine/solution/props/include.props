@@ -15,7 +15,7 @@
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
-      <ForcedIncludeFiles>pch.hpp;include.hpp</ForcedIncludeFiles>
+      <ForcedIncludeFiles>pch.hpp</ForcedIncludeFiles>
       <WarningLevel>EnableAllWarnings</WarningLevel>
     </ClCompile>
     <FxCompile>

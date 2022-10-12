@@ -1,4 +1,5 @@
-﻿
+﻿#include "include.hpp"
+
 int32_t main()
 {
 #ifdef _DEBUG
@@ -20,7 +21,7 @@ int32_t main()
 
 	std::vector<vertex> vertices;
 
-	constexpr float count = 500;
+	constexpr float count = 50;
 	for (auto i = 0; i < count; ++i)
 	{
 		static const auto& func = [](const uint32_t index, const uint32_t count) -> vector3

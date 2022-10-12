@@ -1,4 +1,6 @@
-﻿using namespace Microsoft::WRL;
+﻿#include "include.hpp"
+
+using namespace Microsoft::WRL;
 
 descriptor_heap::descriptor_heap(gsl::not_null<ID3D12Device*> device, uint32_t descriptor_count, heap_type heap_type, heap_flag heap_flag)
 	: m_descriptor_count(descriptor_count)
