@@ -151,54 +151,35 @@ void graphic_d3d12::create_pipelines()
 		IID_PPV_ARGS(m_root_signature.GetAddressOf()));
 
 	// パイプラインステート
-	std::array<D3D12_INPUT_ELEMENT_DESC, FRAME_COUNT> elements{};
-	elements.at(0).SemanticName = "POSITION";
-	elements.at(0).SemanticIndex = 0;
-	elements.at(0).Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	elements.at(0).InputSlot = 0;
-	elements.at(0).AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	elements.at(0).InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-	elements.at(0).InstanceDataStepRate = 0;
+	const std::vector<D3D12_INPUT_ELEMENT_DESC> elements =
+	{
+		{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		},
 
-	elements.at(1).SemanticName = "COLOR";
-	elements.at(1).SemanticIndex = 0;
-	elements.at(1).Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	elements.at(1).InputSlot = 0;
-	elements.at(1).AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	elements.at(1).InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-	elements.at(1).InstanceDataStepRate = 0;
-
-	// ラスタライザーステート
-	D3D12_RASTERIZER_DESC descRS{};
-	descRS.FillMode = D3D12_FILL_MODE_SOLID;
-	descRS.CullMode = D3D12_CULL_MODE_NONE;
-	descRS.FrontCounterClockwise = false;
-	descRS.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
-	descRS.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
-	descRS.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-	descRS.DepthClipEnable = false;
-	descRS.MultisampleEnable = false;
-	descRS.AntialiasedLineEnable = false;
-	descRS.ForcedSampleCount = 0;
-	descRS.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-
-	// レンダーターゲットのブレンド設定
-	D3D12_RENDER_TARGET_BLEND_DESC descRTBS{
-		false,false,
-		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
-		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
-		D3D12_LOGIC_OP_NOOP,
-		D3D12_COLOR_WRITE_ENABLE_ALL
+		{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+			0
+		}
 	};
 
-	// ブレンドステートの設定
-	D3D12_BLEND_DESC descBS{};
-	descBS.AlphaToCoverageEnable = false;
-	descBS.IndependentBlendEnable = false;
-	for (auto i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
-	{
-		gsl::at(descBS.RenderTarget, i) = descRTBS;
-	}
+	/*  ラスタライザの設定  */
+	auto descRS = CD3DX12_RASTERIZER_DESC(CD3DX12_DEFAULT());
+	descRS.CullMode = D3D12_CULL_MODE_NONE;
+
+	/*  ブレンドステートの設定  */
+	const auto& descBS = CD3DX12_BLEND_DESC(CD3DX12_DEFAULT());
 
 	ComPtr<ID3DBlob> vs_blob;
 	ComPtr<ID3DBlob> ps_blob;
@@ -214,8 +195,8 @@ void graphic_d3d12::create_pipelines()
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc_pipeline_state{};
 	desc_pipeline_state.InputLayout = D3D12_INPUT_LAYOUT_DESC{ elements.data(),gsl::narrow<UINT>(elements.size()) };
 	desc_pipeline_state.pRootSignature = m_root_signature.Get();
-	desc_pipeline_state.VS = D3D12_SHADER_BYTECODE{ vs_blob->GetBufferPointer(),vs_blob->GetBufferSize() };
-	desc_pipeline_state.PS = D3D12_SHADER_BYTECODE{ ps_blob->GetBufferPointer(),ps_blob->GetBufferSize() };
+	desc_pipeline_state.VS = CD3DX12_SHADER_BYTECODE(vs_blob.Get());
+	desc_pipeline_state.PS = CD3DX12_SHADER_BYTECODE(ps_blob.Get());
 	desc_pipeline_state.RasterizerState = descRS;
 	desc_pipeline_state.BlendState = descBS;
 	desc_pipeline_state.DepthStencilState.DepthEnable = false;
@@ -231,13 +212,8 @@ void graphic_d3d12::create_pipelines()
 	hr = m_device->CreateGraphicsPipelineState(&desc_pipeline_state, IID_PPV_ARGS(m_pipeline.GetAddressOf()));
 	Ensures(SUCCEEDED(hr));
 
-	// Setting Viewport
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = static_cast<float>(m_winapp.get_width());
-	viewport.Height = static_cast<float>(m_winapp.get_height());
-	viewport.MinDepth = 0;
-	viewport.MaxDepth = 1;
+	/*  ビューポートの設定  */
+	viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_winapp.get_width()), static_cast<float>(m_winapp.get_height()));
 
 	scissor.left = 0;
 	scissor.right = m_winapp.get_width();
