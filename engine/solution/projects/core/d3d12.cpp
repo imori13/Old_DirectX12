@@ -171,7 +171,44 @@ void graphic_d3d12::create_pipelines()
 			D3D12_APPEND_ALIGNED_ELEMENT,
 			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
 			0
-		}
+		},
+
+		{
+			"WORLD",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			1,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+			1
+		},
+		{
+			"WORLD",
+			1,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			1,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+			1
+		},
+		{
+			"WORLD",
+			2,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			1,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+			1
+		},
+		{
+			"WORLD",
+			3,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			1,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA,
+			1
+		},
 	};
 
 	/*  ラスタライザの設定  */
@@ -263,6 +300,13 @@ void graphic_d3d12::render(const D3D12_VERTEX_BUFFER_VIEW& vbv, const D3D12_INDE
 	m_command_list->IASetVertexBuffers(0, 1, &vbv);
 	m_command_list->IASetIndexBuffer(&ibv);
 	m_command_list->DrawIndexedInstanced(ibv.SizeInBytes / sizeof(uint32_t), 1, 0, 0, 0);
+}
+
+void graphic_d3d12::render(gsl::span<D3D12_VERTEX_BUFFER_VIEW> views, const D3D12_INDEX_BUFFER_VIEW& ibv)
+{
+	m_command_list->IASetVertexBuffers(0, views.size(), views.data());
+	m_command_list->IASetIndexBuffer(&ibv);
+	m_command_list->DrawIndexedInstanced(ibv.SizeInBytes / sizeof(uint32_t), 100, 0, 0, 0);
 }
 
 void graphic_d3d12::render_end()

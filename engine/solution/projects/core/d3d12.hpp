@@ -3,9 +3,8 @@
 #include "vertex.hpp"
 #include "d3d12_define.hpp"
 
-struct alignas(256) _transform
+struct alignas(256) camera_mat
 {
-	DirectX::XMMATRIX world;
 	DirectX::XMMATRIX view;
 	DirectX::XMMATRIX proj;
 };
@@ -34,6 +33,7 @@ public:
 	void set_constantbuffer(const gsl::not_null<descriptor_heap*> heap);
 	void render(const D3D12_VERTEX_BUFFER_VIEW& vbv);
 	void render(const D3D12_VERTEX_BUFFER_VIEW& vbv, const D3D12_INDEX_BUFFER_VIEW& ibv);
+	void render(gsl::span<D3D12_VERTEX_BUFFER_VIEW> views, const D3D12_INDEX_BUFFER_VIEW& ibv);
 	void render_end();
 	void present();
 	void wait_gpu();
