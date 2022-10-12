@@ -9,13 +9,19 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="source\core">
+    <Filter Include="source\private">
+      <UniqueIdentifier>{95d7f182-61ff-4794-9a8f-27ab6a5a4cb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\private\core">
       <UniqueIdentifier>{695558b9-23e9-4772-a476-76e27dc8b1ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\math">
+    <Filter Include="source\private\math">
       <UniqueIdentifier>{fa484b7f-d4c5-4d09-8ed0-df0d1746ea6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\render">
+    <Filter Include="source\public">
+      <UniqueIdentifier>{c40e7590-aa70-4ed7-ac2b-d39ce5f574bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\private\d3d12">
       <UniqueIdentifier>{e8d8b75e-227b-4169-9a4b-dd27b3285822}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -27,19 +33,19 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="core.cpp">
-      <Filter>source\core</Filter>
+      <Filter>source\private\core</Filter>
     </ClCompile>
     <ClCompile Include="d3d12_factory.cpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClCompile>
     <ClCompile Include="d3d12_descriptor_heap.cpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClCompile>
     <ClCompile Include="d3d12.cpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClCompile>
     <ClCompile Include="winapp.cpp">
-      <Filter>source\core</Filter>
+      <Filter>source\private\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -47,46 +53,46 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="core.hpp">
-      <Filter>source\core</Filter>
-    </ClInclude>
-    <ClInclude Include="include.hpp">
-      <Filter>source</Filter>
+      <Filter>source\private\core</Filter>
     </ClInclude>
     <ClInclude Include="math.hpp">
-      <Filter>source\math</Filter>
+      <Filter>source\private\math</Filter>
     </ClInclude>
     <ClInclude Include="matrix4x4.hpp">
-      <Filter>source\math</Filter>
+      <Filter>source\private\math</Filter>
     </ClInclude>
     <ClInclude Include="vector2.hpp">
-      <Filter>source\math</Filter>
+      <Filter>source\private\math</Filter>
     </ClInclude>
     <ClInclude Include="vector3.hpp">
-      <Filter>source\math</Filter>
+      <Filter>source\private\math</Filter>
     </ClInclude>
     <ClInclude Include="vector4.hpp">
-      <Filter>source\math</Filter>
+      <Filter>source\private\math</Filter>
     </ClInclude>
     <ClInclude Include="d3d12_descriptor_heap.hpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClInclude>
     <ClInclude Include="d3d12_factory.hpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClInclude>
     <ClInclude Include="d3d12_gpu_buffer.hpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClInclude>
     <ClInclude Include="d3d12.hpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClInclude>
     <ClInclude Include="vertex.hpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
     </ClInclude>
     <ClInclude Include="winapp.hpp">
-      <Filter>source\core</Filter>
+      <Filter>source\private\core</Filter>
     </ClInclude>
     <ClInclude Include="d3d12_define.hpp">
-      <Filter>source\render</Filter>
+      <Filter>source\private\d3d12</Filter>
+    </ClInclude>
+    <ClInclude Include="include.hpp">
+      <Filter>source\public</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
