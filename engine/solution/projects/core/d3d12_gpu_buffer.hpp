@@ -11,11 +11,6 @@ public:
 	{
 	}
 
-	~gpu_buffer()
-	{
-		unmap();
-	}
-
 	gpu_buffer(gsl::not_null<ID3D12Device*> pDevice, size_t buffer_size)
 		: m_buffer_size(buffer_size)
 		, m_resource(nullptr)
@@ -38,6 +33,18 @@ public:
 		);
 		Ensures(SUCCEEDED(hr));
 	}
+
+	~gpu_buffer()
+	{
+		unmap();
+	}
+
+public:
+	gpu_buffer(const gpu_buffer&) = delete;
+	gpu_buffer& operator=(const gpu_buffer&) = delete;
+
+	gpu_buffer(gpu_buffer&&) = default;
+	gpu_buffer& operator=(gpu_buffer&&) = default;
 
 public:
 	inline void map(const gsl::span<T> span)
@@ -64,7 +71,7 @@ public:
 		memcpy_s(m_ptr, m_buffer_size, &value, m_buffer_size);
 	}
 
-	inline void unmap() const noexcept
+	inline void unmap() const
 	{
 		m_resource->Unmap(0, nullptr);
 	}

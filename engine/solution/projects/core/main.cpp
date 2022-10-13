@@ -18,7 +18,6 @@ int32_t main()
 	std::unique_ptr<gpu_buffer<DirectX::XMMATRIX>> vertex_stream;
 	std::array< std::unique_ptr<gpu_buffer<camera_mat>>, FRAME_COUNT> m_constant_buffers;
 
-	HRESULT hr{};
 	const auto& device = d3d12->get_device();
 
 	std::vector<vertex> vertices =

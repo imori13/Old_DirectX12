@@ -1,3 +1,3 @@
 ﻿#pragma once
 
-static constexpr uint32_t FRAME_COUNT = 2;
+extern inline constexpr uint32_t FRAME_COUNT = 2;

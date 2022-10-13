@@ -18,7 +18,7 @@ namespace
 	D3D12_RECT scissor{};
 }
 
-graphic_d3d12::graphic_d3d12(const winapp& winapp)
+graphic_d3d12::graphic_d3d12(const winapp& winapp) noexcept
 	: m_winapp(winapp)
 {
 
@@ -304,7 +304,7 @@ void graphic_d3d12::render(const D3D12_VERTEX_BUFFER_VIEW& vbv, const D3D12_INDE
 
 void graphic_d3d12::render(gsl::span<D3D12_VERTEX_BUFFER_VIEW> views, const D3D12_INDEX_BUFFER_VIEW& ibv)
 {
-	m_command_list->IASetVertexBuffers(0, views.size(), views.data());
+	m_command_list->IASetVertexBuffers(0, gsl::narrow<uint32_t>(views.size()), views.data());
 	m_command_list->IASetIndexBuffer(&ibv);
 	m_command_list->DrawIndexedInstanced(ibv.SizeInBytes / sizeof(uint32_t), 100, 0, 0, 0);
 }

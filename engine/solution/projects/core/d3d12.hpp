@@ -14,7 +14,7 @@ class descriptor_heap;
 class graphic_d3d12
 {
 public:
-	graphic_d3d12(const winapp& winapp);
+	graphic_d3d12(const winapp& winapp) noexcept;
 	~graphic_d3d12() noexcept(false);
 
 public:
