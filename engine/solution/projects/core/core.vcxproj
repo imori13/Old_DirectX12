@@ -147,6 +147,7 @@
     <ClCompile Include="d3d12_factory.cpp" />
     <ClCompile Include="d3d12_descriptor_heap.cpp" />
     <ClCompile Include="d3d12.cpp" />
+    <ClCompile Include="graphics_module.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -163,6 +164,7 @@
     <ClInclude Include="d3d12_descriptor_heap.hpp" />
     <ClInclude Include="d3d12_gpu_buffer.hpp" />
     <ClInclude Include="d3d12.hpp" />
+    <ClInclude Include="graphics_module.hpp" />
     <ClInclude Include="include.hpp" />
     <ClInclude Include="math.hpp" />
     <ClInclude Include="matrix4x4.hpp" />

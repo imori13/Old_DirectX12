@@ -19,3 +19,4 @@ using namespace math;
 #include "d3d12_descriptor_heap.hpp"
 #include "d3d12_gpu_buffer.hpp"
 #include "vertex.hpp"
+#include "graphics_module.hpp"

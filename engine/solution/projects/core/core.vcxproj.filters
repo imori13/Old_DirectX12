@@ -47,6 +47,9 @@
     <ClCompile Include="winapp.cpp">
       <Filter>source\private\core</Filter>
     </ClCompile>
+    <ClCompile Include="graphics_module.cpp">
+      <Filter>source\private\d3d12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.hpp">
@@ -93,6 +96,9 @@
     </ClInclude>
     <ClInclude Include="include.hpp">
       <Filter>source\public</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_module.hpp">
+      <Filter>source\private\d3d12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
