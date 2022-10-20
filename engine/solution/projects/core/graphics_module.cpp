@@ -42,6 +42,10 @@ namespace module
 			.right = gsl::narrow<long>(arg.render_width),
 			.bottom = gsl::narrow<long>(arg.render_height),
 		};
+
+		m_instance->create_device(arg);
+		m_instance->create_pipelines();
+		m_instance->create_cbv_heap();
 	}
 
 	void graphics::begin()
@@ -87,6 +91,12 @@ namespace module
 		present();
 	}
 
+	void graphics::hoge(gsl::span<D3D12_VERTEX_BUFFER_VIEW> span, const D3D12_INDEX_BUFFER_VIEW& ibv)
+	{
+		m_command_list->IASetVertexBuffers(0, span.size(), span.data());
+		m_command_list->IASetIndexBuffer(&ibv);
+	}
+
 	void graphics::set_vertices(const D3D12_VERTEX_BUFFER_VIEW& vbv, const D3D12_INDEX_BUFFER_VIEW& ibv)
 	{
 		m_command_list->IASetVertexBuffers(0, 1, &vbv);
@@ -123,7 +133,7 @@ namespace module
 		// create swapchain
 		{
 			// create swapchain
-			m_swapchain = create_swapchain(m_command_queue.Get(), m_winapp.get_width(), m_winapp.get_height(), FRAME_COUNT, m_winapp.get_hwnd());
+			m_swapchain = create_swapchain(m_command_queue.Get(), arg.render_width, arg.render_height, arg.frame_count, arg.hwnd);
 
 			// get current back buffer index
 			m_frame_index = m_swapchain->GetCurrentBackBufferIndex();

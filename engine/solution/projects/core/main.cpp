@@ -7,16 +7,17 @@ int32_t main()
 #endif
 
 	const auto& app = std::make_unique<winapp>(800, 450);
-	const auto& d3d12 = std::make_unique<graphic_d3d12>(*app);
 
-	d3d12->create_devices();
-	d3d12->create_pipelines();
+	module::graphics_createarg arg{};
+	arg.render_width = app->get_width();
+	arg.render_height = app->get_height();
+	arg.hwnd = app->get_hwnd();
+	arg.frame_count = FRAME_COUNT;
+	module::graphics::create(arg);
 
 	std::unique_ptr<gpu_buffer<basic_vertex>> m_vertex_buffer;
 	std::unique_ptr<gpu_buffer<uint32_t>> index_buffer;
 	std::unique_ptr<gpu_buffer<DirectX::XMMATRIX>> vertex_stream;
-
-	const auto& device = d3d12->get_device();
 
 	std::vector<basic_vertex> vertices =
 	{
@@ -37,6 +38,7 @@ int32_t main()
 
 	aaaaa.resize(100);
 
+	const auto& device = module::graphics::get()->get_device();
 	m_vertex_buffer = std::make_unique<gpu_buffer<basic_vertex>>(device, vertices.size() * sizeof(basic_vertex));
 	m_vertex_buffer->map(vertices);
 
@@ -46,13 +48,10 @@ int32_t main()
 	vertex_stream = std::make_unique<gpu_buffer<DirectX::XMMATRIX>>(device, aaaaa.size() * sizeof(DirectX::XMMATRIX));
 	vertex_stream->map(aaaaa);
 
-	using namespace module;
 
-	graphics::create();
+	const auto& graphicsmodule = module::graphics::get();
 
-	const auto& graphicsmodule = graphics::get();
-
-	graphicsmodule->set_stream(vertex_stream->get_vertex_buffer_view());
+	graphicsmodule->set_stream(vertex_stream->get_vbv());
 
 	while (app->isloop())
 	{
@@ -65,8 +64,10 @@ int32_t main()
 			data[i] = DirectX::XMMatrixTranslation(rand() % 1000 / 100.f, rand() % 1000 / 100.f, 0);
 		}
 
+		std::array<D3D12_VERTEX_BUFFER_VIEW, 2> a = { m_vertex_buffer->get_vbv(), vertex_stream->get_vbv() };
+
 		graphicsmodule->begin();
-		graphicsmodule->set_vertices(m_vertex_buffer->get_vertex_buffer_view(), index_buffer->get_index_buffer_view());
+		graphicsmodule->set_vertices(m_vertex_buffer->get_vbv(), index_buffer->get_ibv());
 		graphicsmodule->draw_call(6, 100);
 		graphicsmodule->end();
 
@@ -79,7 +80,8 @@ int32_t main()
 		//d3d12->present();
 	}
 
-	d3d12->wait_gpu();
+	module::graphics::get()->wait_gpu();
+	//d3d12->wait_gpu();
 
 	return 0;
 }
