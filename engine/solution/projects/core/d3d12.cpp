@@ -18,22 +18,22 @@ namespace
 	D3D12_RECT scissor{};
 }
 
-graphic_d3d12::graphic_d3d12(const winapp& winapp) noexcept
-	: m_winapp(winapp)
-{
-
-}
-
-graphic_d3d12::~graphic_d3d12() noexcept(false)
-{
-	wait_gpu();
-
-	if (m_fence_event != nullptr)
-	{
-		CloseHandle(m_fence_event);
-		m_fence_event = nullptr;
-	}
-}
+//graphic_d3d12::graphic_d3d12(const winapp& winapp) noexcept
+//	: m_winapp(winapp)
+//{
+//
+//}
+//
+//graphic_d3d12::~graphic_d3d12() noexcept(false)
+//{
+//	wait_gpu();
+//
+//	if (m_fence_event != nullptr)
+//	{
+//		CloseHandle(m_fence_event);
+//		m_fence_event = nullptr;
+//	}
+//}
 
 void graphic_d3d12::create_devices()
 {
@@ -52,7 +52,7 @@ void graphic_d3d12::create_devices()
 	// create swapchain
 	{
 		// create swapchain
-		m_swapchain = create_swapchain(m_command_queue.Get(), m_winapp.get_width(), m_winapp.get_height(), FRAME_COUNT, m_winapp.get_hwnd());
+		m_swapchain = create_swapchain(m_command_queue.Get(), m_winapp->get_width(), m_winapp->get_height(), FRAME_COUNT, m_winapp->get_hwnd());
 
 		// get current back buffer index
 		m_frame_index = m_swapchain->GetCurrentBackBufferIndex();
@@ -250,12 +250,12 @@ void graphic_d3d12::create_pipelines()
 	Ensures(SUCCEEDED(hr));
 
 	/*  ビューポートの設定  */
-	viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_winapp.get_width()), static_cast<float>(m_winapp.get_height()));
+	viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_winapp->get_width()), static_cast<float>(m_winapp->get_height()));
 
 	scissor.left = 0;
-	scissor.right = m_winapp.get_width();
+	scissor.right = m_winapp->get_width();
 	scissor.top = 0;
-	scissor.bottom = m_winapp.get_height();
+	scissor.bottom = m_winapp->get_height();
 }
 
 void graphic_d3d12::render_begin()

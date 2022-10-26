@@ -13,17 +13,35 @@ class descriptor_heap;
 
 class graphic_d3d12
 {
-public:
-	graphic_d3d12(const winapp& winapp) noexcept;
-	~graphic_d3d12() noexcept(false);
+	friend std::unique_ptr<graphic_d3d12> std::make_unique<graphic_d3d12>();
+	friend class std::default_delete<graphic_d3d12>;
+
+	static inline std::unique_ptr<graphic_d3d12> m_instance = nullptr;
+
+	explicit graphic_d3d12() = default;
+	~graphic_d3d12() = default;
 
 public:
-	graphic_d3d12(graphic_d3d12&&) = default;
-	graphic_d3d12& operator=(graphic_d3d12&&) = default;
+	static inline graphic_d3d12* create(gsl::not_null<winapp*> winapp)
+	{
+		Expects(m_instance == nullptr);
 
-public:
-	graphic_d3d12(const graphic_d3d12&) = delete;
-	graphic_d3d12& operator=(const graphic_d3d12&) = delete;
+		m_instance = std::make_unique<graphic_d3d12>();
+		m_instance->m_winapp = winapp;
+
+		return m_instance.get();
+	}
+//public:
+//	graphic_d3d12(const winapp& winapp) noexcept;
+//	~graphic_d3d12() noexcept(false);
+//
+//public:
+//	graphic_d3d12(graphic_d3d12&&) = default;
+//	graphic_d3d12& operator=(graphic_d3d12&&) = default;
+//
+//public:
+//	graphic_d3d12(const graphic_d3d12&) = delete;
+//	graphic_d3d12& operator=(const graphic_d3d12&) = delete;
 
 public:
 	void create_devices();
@@ -46,7 +64,7 @@ private:
 	void resource_barrier(const D3D12_RESOURCE_STATES state);
 
 private:
-	const winapp& m_winapp;
+	winapp* m_winapp;
 
 	Microsoft::WRL::ComPtr<ID3D12Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_command_queue;
