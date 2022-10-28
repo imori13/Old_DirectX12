@@ -18,23 +18,6 @@ namespace
 	D3D12_RECT scissor{};
 }
 
-//graphic_d3d12::graphic_d3d12(const winapp& winapp) noexcept
-//	: m_winapp(winapp)
-//{
-//
-//}
-//
-//graphic_d3d12::~graphic_d3d12() noexcept(false)
-//{
-//	wait_gpu();
-//
-//	if (m_fence_event != nullptr)
-//	{
-//		CloseHandle(m_fence_event);
-//		m_fence_event = nullptr;
-//	}
-//}
-
 void graphic_d3d12::create_devices()
 {
 	using namespace d3d12_factory;
@@ -258,6 +241,37 @@ void graphic_d3d12::create_pipelines()
 	scissor.bottom = m_winapp->get_height();
 }
 
+void graphic_d3d12::create_cbv()
+{
+	static const std::vector<DirectX::XMMATRIX> aaaaa =
+	{
+		DirectX::XMMatrixTranslation(-1,1,0),
+		DirectX::XMMatrixTranslation(0,0,0),
+		DirectX::XMMatrixTranslation(1,0,0),
+	};
+
+	const auto& eye_pos = DirectX::XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
+	const auto& dir = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	const auto& up_ward = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	const auto& fov_y = DirectX::XMConvertToRadians(90);
+	const auto& aspect = static_cast<float>(m_winapp->get_width()) / static_cast<float>(m_winapp->get_height());
+
+	camera_mat _trans{};
+	for (auto& buffer : m_constant_buffers)
+	{
+		buffer = std::make_unique<gpu_buffer<camera_mat>>(m_device.Get(), sizeof(camera_mat));
+		buffer->map(_trans);
+
+		buffer->data()->view = DirectX::XMMatrixLookToLH(eye_pos, dir, up_ward);
+		buffer->data()->proj = DirectX::XMMatrixPerspectiveFovLH(fov_y, aspect, 0.0001f, 100);
+	}
+
+	// bind heap
+	m_heap_cbv = std::make_unique<descriptor_heap>(m_device.Get(), FRAME_COUNT, heap_type::cbv_srv_uav, heap_flag::shader_visible);
+	for (auto& buffer : m_constant_buffers)
+		m_heap_cbv->create_cbv(buffer->get_resource());
+}
+
 void graphic_d3d12::render_begin()
 {
 	// start commandt
@@ -281,12 +295,13 @@ void graphic_d3d12::render_init()
 	m_command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_command_list->RSSetViewports(1, &viewport);
 	m_command_list->RSSetScissorRects(1, &scissor);
+	
+	m_command_list->SetDescriptorHeaps(1, m_heap_cbv->get_address());
+	m_command_list->SetGraphicsRootConstantBufferView(0, m_heap_cbv->get_cbv_view_desc().BufferLocation);
 }
 
 void graphic_d3d12::set_constantbuffer(const gsl::not_null<descriptor_heap*> heap)
 {
-	m_command_list->SetDescriptorHeaps(1, heap->get_address());
-	m_command_list->SetGraphicsRootConstantBufferView(0, heap->get_cbv_view_desc().BufferLocation);
 }
 
 void graphic_d3d12::render(const D3D12_VERTEX_BUFFER_VIEW& vbv)

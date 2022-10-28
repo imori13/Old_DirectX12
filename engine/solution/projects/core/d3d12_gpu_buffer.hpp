@@ -79,7 +79,7 @@ public:
 	inline gsl::not_null<T*> data() { return m_ptr; }
 
 	/*  頂点バッファビューを取得  */
-	inline D3D12_VERTEX_BUFFER_VIEW get_vertex_buffer_view() const
+	inline D3D12_VERTEX_BUFFER_VIEW get_vbv() const
 	{
 		D3D12_VERTEX_BUFFER_VIEW vbv{};
 		vbv.BufferLocation = m_resource->GetGPUVirtualAddress();
@@ -89,7 +89,7 @@ public:
 	}
 
 	/*  インデックスバッファビューを取得  */
-	inline D3D12_INDEX_BUFFER_VIEW get_index_buffer_view() const
+	inline D3D12_INDEX_BUFFER_VIEW get_ibv() const
 	{
 		D3D12_INDEX_BUFFER_VIEW ibv{};
 		ibv.BufferLocation = m_resource->GetGPUVirtualAddress();
